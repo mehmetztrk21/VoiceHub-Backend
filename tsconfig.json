@@ -6,6 +6,7 @@
     "allowJs": true,
     "outDir": "build",                          
     "rootDir": "src",
+    "strictPropertyInitialization": false,
     "strict": true,         
     "noImplicitAny": true,
     "esModuleInterop": true,
