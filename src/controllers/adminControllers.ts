@@ -13,3 +13,7 @@ export const addUser = async (req: Request, res: Response) => {
 export const getUsers = async (req: Request, res: Response) => {
     res.send({ data: users, message: "Success", status: 200 });
 }
+
+export const saveVoice = async (req: Request, res: Response) => {
+    res.send({ data: req.file, message: "Success", status: 200 });
+}
