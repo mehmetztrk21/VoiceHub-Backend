@@ -4,7 +4,10 @@ import multer, { Multer } from "multer";
 import path from "path";
 
 export default async function getSettings(app: any) {
-    app.use(bodyParser.json());
+    // parse application/x-www-form-urlencoded
+    app.use(bodyParser.urlencoded({ extended: false }))
+    // parse application/json
+    app.use(bodyParser.json())
     app.use(fileUpload());
     app.use((req: any, res: any, next: any) => {
         res.setHeader("Access-Control-Allow-Origin", "*");
