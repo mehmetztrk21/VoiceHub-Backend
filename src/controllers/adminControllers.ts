@@ -1,19 +1,22 @@
 import { Request, Response } from "express";
 import { User } from "../models/user";
-
-const users: User[] = [{ name: "John Doe", age: 30 }, { name: "Jane Doe", age: 25 }];
-
-export const addUser = async (req: Request, res: Response) => {
-    const { name, age } = req.body;
-    const user = new User({ name, age });
-    users.push(user);
-    res.send({ data: user, message: "Success", status: 200 });
+import { ResponseFormat } from "../types/responseFormat";
+import { IUser } from "../types/userTypes";
+export const addUser = async (req: any, res: any) => {
+    const reqUser = req.body as IUser;
+    const user = new User(reqUser);
+    const record = await user.save();
+    if (!record) {
+        res.send(new ResponseFormat(null, "Failed", 400, false));
+    }
+    res.send(new ResponseFormat(record, "Success", 200, true));
 };
 
 export const getUsers = async (req: Request, res: Response) => {
-    res.send({ data: users, message: "Success", status: 200 });
+    const users = await User.find().select("-__v");
+    res.send(new ResponseFormat(users, "Success", 200, true));
 }
 
 export const saveVoice = async (req: Request, res: Response) => {
-    res.send({ data: req.file, message: "Success", status: 200 });
+    res.send(new ResponseFormat(req.file, "Success", 200, true));
 }

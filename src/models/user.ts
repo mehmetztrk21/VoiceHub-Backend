@@ -1,14 +1,16 @@
+import mongoose from "mongoose";
 
-export interface IUser {
+
+const Schema = mongoose.Schema;
+
+export interface IUser extends mongoose.Document {
     name: string;
     age: number;
 }
 
-export class User {
-    constructor(data: IUser) {
-        this.name = data.name;
-        this.age = data.age;
-    }
-    name: string;
-    age: number;
-}
+const userSchema = new Schema({
+    name: String,
+    age: Number
+});
+
+export const User = mongoose.model("User", userSchema);
