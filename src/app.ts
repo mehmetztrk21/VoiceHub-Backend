@@ -6,8 +6,9 @@ import getSettings from "./utils/settings";
 const app = express();
 
 // parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }))
-
+app.use(bodyParser.urlencoded({
+    extended: true
+}));
 // parse application/json
 app.use(bodyParser.json())
 
@@ -19,7 +20,7 @@ app.use(async (req, res, next) => {
 
 app.use("/admin", adminRoutes);
 
-mongoose.connect("mongodb://0.0.0.0:27017/test").then(result => {
+mongoose.connect("").then(result => {
     console.log("Connected to DB");
     app.listen(3000);
 }).catch(err => {
