@@ -5,7 +5,7 @@ import path from "path";
 
 export default async function getSettings(app: any) {
     // parse application/x-www-form-urlencoded
-    app.use(bodyParser.urlencoded({ extended: false }))
+    app.use(bodyParser.urlencoded({ extended: true }))
     // parse application/json
     app.use(bodyParser.json())
     app.use(fileUpload());
