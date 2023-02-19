@@ -9,3 +9,7 @@ export interface IUser {
     profilePhoto: string,
     description: string,
 }
+
+export interface IPost {
+    content: string
+}
