@@ -3,7 +3,10 @@ import express from "express";
 import mongoose from "mongoose";
 import { router as adminRoutes } from "./routers/adminRoutes";
 import getSettings from "./utils/settings";
+import env from "dotenv";
 const app = express();
+env.config();
+const MongoDbUrl = process.env.MongoDbUrl || "";
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({
@@ -20,7 +23,7 @@ app.use(async (req, res, next) => {
 
 app.use("/admin", adminRoutes);
 
-mongoose.connect("").then(result => {
+mongoose.connect(MongoDbUrl).then(result => {
     console.log("Connected to DB");
     app.listen(3000);
 }).catch(err => {
