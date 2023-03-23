@@ -1,35 +1,61 @@
-import bodyParser from "body-parser";
-import env from "dotenv";
-import express from "express";
-import mongoose from "mongoose";
-import { router as adminRoutes } from "./routers/adminRoutes";
-import { router as userRoutes } from "./routers/userRoutes";
-import getSettings from "./utils/settings";
-const app = express();
-env.config();
-const MongoDbUrl = process.env.MongoDbUrl || "";
+import { NextApplication, NextFileResolverPlugin, NextKnexPlugin, NextOptions, NextSessionOptions } from "fastapi-next";
+import path from "path";
+import { NextMongoPlugin } from "./plugins/NextMongoPlugin";
+import { getConfig } from "./Config";
 
-// parse application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
-// parse application/json
-app.use(bodyParser.json())
+const options = new NextOptions();
+options.debug = true;
+options.openApi.enabled = true;
+options.swagger.enabled = true;
+options.openApi.title = "Getir MDU";
+options.openApi.description = "Getir MDU API";
+options.openApi.version = "1.0.0";
+options.openApi.https = false;
+options.openApi.http= true;
+options.routerDirs.push(path.join(__dirname, "routers"));
+//swagger
+const app = new NextApplication(options);
+async function main() {
+    const config = await getConfig();
+    if (!config) {
+        console.error("Config not found");
+        process.exit(-1);
+    }
+    const EventEmitter = require('events');
+    const emitter = new EventEmitter();
 
-app.use(async (req, res, next) => {
-    await getSettings(app);
-    console.log("In the middleware");
-    next();
-});
+    emitter.setMaxListeners(2000);
+    const appdb = new NextKnexPlugin(config.db, "db");
 
-app.use("/user", userRoutes);
-app.use("/admin", adminRoutes);
+    app.registry.register(appdb);
+    app.registry.register(new NextFileResolverPlugin());
+    app.registry.register(new NextMongoPlugin(config.mongodb, "voiceHubDb"));
 
-mongoose.connect(MongoDbUrl).then(result => {
-    console.log("Connected to DB");
-    app.listen(3000);
-}).catch(err => {
-    console.log(err);
-});
+    // ? JWT
+    app.registerJWT({
+        anonymousPaths: [
+            /^\/?auth.*/,
+            /^\/?openapi.json/,
+            /^\/?swagger.*/,
+            /^\/?public.*/,
+
+        ],
+        secret: "somesupersecretsecret",
+        signOptions: {
+            expiresIn: "1d"
+        }
+    });
+
+    app.registry.registerObject("jwt", app.jwtController);
+
+    await app.registerInMemorySession({
+    } as NextSessionOptions);
+
+    // ? Init
+    await app.init();
 
 
+    // ? Start
+    await app.start();
+}
+main();
