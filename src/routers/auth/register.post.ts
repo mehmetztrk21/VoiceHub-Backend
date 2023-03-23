@@ -1,12 +1,10 @@
 import { ApiResponse } from "fastapi-next";
-import fs from 'fs';
 import md5 from 'md5';
 import moment from "moment";
 import { ObjectId } from "mongodb";
-import util from 'util';
 import * as yup from 'yup';
 import { AppContext } from "../../AppContext";
-const writeFile = util.promisify(fs.writeFile);
+import { writeFile } from "../../utils/writeFile";
 interface ReqisterBody {
     name: string;
     surname: string;
