@@ -8,6 +8,7 @@ export class Comment {
     createdBy: ObjectId;
     createdAt: Date;
     updatedAt: Date;
+    isDeleted: boolean;
 }
 
 export const mappingComment= (body: any) => {
@@ -18,5 +19,6 @@ export const mappingComment= (body: any) => {
     comment.createdAt = new Date();
     comment.updatedAt = new Date();
     comment.createdBy = new ObjectId(body.createdBy);
+    comment.isDeleted = false;
     return comment;
 }
