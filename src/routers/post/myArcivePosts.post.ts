@@ -9,7 +9,57 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<an
     if (!resolved) return response.setError("Unauthorized");
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
     if (user) {
-        const posts = await mongoDb.collection("posts").find({ $and: [{ createdBy: new ObjectId(user._id) }, { status: "passive" }] }).toArray();
+        const posts = await mongoDb.collection("posts").aggregate([
+            {
+                $match: {
+                    $and: [
+                        { createdBy: new ObjectId(user._id) },
+                        { status: "passive" }
+                    ]
+                }
+            },
+            {
+                $lookup: {
+                    from: "comments",
+                    let: { postId: "$_id" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$postId", "$$postId"] },
+                                        { $eq: ["$isDeleted", false] }
+                                    ]
+                                }
+                            }
+                        },
+                        {
+                            $lookup: {
+                                from: "users",
+                                localField: "createdBy",
+                                foreignField: "_id",
+                                as: "createdBy"
+                            }
+                        },
+                        { $unwind: "$createdBy" },
+                        {
+                            $project: {
+                                "createdBy.password": 0,
+                                "createdBy.profilePhotoInfo": 0,
+                                "createdBy.descriptionVoiceInfo": 0,
+                                "contentInfo": 0
+                            },
+                        }, {
+                            $sort: { createdAt: -1 }
+                        }
+                    ],
+                    as: "comments"
+                }
+            },
+            {
+                $sort: { createdAt: -1 }
+            }
+        ]).toArray();
         return response.setSuccess(posts);
     }
     else {
