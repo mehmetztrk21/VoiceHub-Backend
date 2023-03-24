@@ -88,11 +88,14 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
             },
             {
                 $sort: { createdAt: -1 }
+            },
+            {
+                $skip: (body.page-1) * body.limit
+            },
+            {
+                $limit: body.limit
             }
-        ])
-            .sort({ createdAt: -1 })
-            .skip((body.page - 1) * body.limit)
-            .limit(body.limit).toArray();
+        ]).toArray();
         return response.setSuccess(posts);
     }
     else {

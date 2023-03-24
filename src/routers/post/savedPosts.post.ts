@@ -2,8 +2,16 @@ import { ApiResponse } from "fastapi-next";
 import { ObjectId } from "mongodb";
 import { AppContext } from "../../AppContext";
 import { resolveToken } from "../../utils/resolveToken";
-
-export default async function ({ body, voiceHubDb, req, session }: AppContext<any>) {
+import * as yup from "yup";
+interface Request {
+    page: number;
+    limit: number;
+}
+export const validate = yup.object().shape({
+    page: yup.number().required(),
+    limit: yup.number().required()
+});
+export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
     var response = new ApiResponse();
     const mongoDb = await voiceHubDb.db("voiceHub");
     const resolved = await resolveToken(req);
@@ -78,12 +86,14 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<an
             },
             {
                 $sort: { createdAt: -1 }
+            },
+            {
+                $skip: (body.page-1) * body.limit
+            },
+            {
+                $limit: body.limit
             }
-        ])
-            .sort({ createdAt: -1 })
-            .skip((body.page - 1) * body.limit)
-            .limit(body.limit).toArray();
-
+        ]).toArray();
         return response.setSuccess(savedPosts);
     }
 
