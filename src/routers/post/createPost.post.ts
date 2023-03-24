@@ -1,6 +1,7 @@
 import { ApiResponse } from "fastapi-next";
 import { ObjectId } from "mongodb";
 import { AppContext } from "../../AppContext";
+import { mappingPost } from "../../models/post";
 import { resolveToken } from "../../utils/resolveToken";
 import { writeFile } from "../../utils/writeFile";
 
@@ -24,27 +25,18 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
         const contentUrl = `public/voices/${objectId + "_content." + content.mimetype.split("/")[1]}`;
         await writeFile(contentUrl, content.buffer).then(() => {
             body.contentUrl = contentUrl;
+            delete content.buffer;
             body.contentInfo = content;
             console.log("File saved");
         }).catch((err) => {
             console.log(err);
         });
     }
-    const post = {
-        _id: objectId,
-        categories: body.Categories,
-        contentUrl: body.ContentUrl,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdBy: resolved["_id"],
-        likes: [],
-        comments: [],
-        isDeleted: false
-    };
+    const post = mappingPost({ ...body, createdBy: resolved["_id"] })
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
     if (user) {
         const posts = await mongoDb.collection("posts").insertOne(post);
-        const userPosts = await mongoDb.collection("users").updateOne({ _id: new ObjectId(resolved["_id"]) }, { $push: { posts: post._id } });
+        await mongoDb.collection("users").updateOne({ _id: new ObjectId(resolved["_id"]) }, { $push: { posts: post._id } });
         return response.setSuccess(posts);
     }
     return response.setError("User not found");
