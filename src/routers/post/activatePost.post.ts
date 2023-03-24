@@ -16,7 +16,7 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
     if (post) {
         const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
         if (user) {
-            const posts = await mongoDb.collection("posts").updateOne({ _id: new ObjectId(body.id) }, { $set: { status: "passive" } });
+            const posts = await mongoDb.collection("posts").updateOne({ _id: new ObjectId(body.id) }, { $set: { status: "active" } });
             return response.setSuccess(posts);
         }
         else {
