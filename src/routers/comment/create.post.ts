@@ -6,7 +6,7 @@ import { resolveToken } from "../../utils/resolveToken";
 import { writeFile } from "../../utils/writeFile";
 
 interface Request {
-    blogId: string;
+    postId: string;
 }
 
 export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
@@ -34,7 +34,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
     const comment = mappingComment({ ...body, createdBy: resolved["_id"] })
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
     if (user) {
-        const result = await mongoDb.collection("comments").insertOne(comment);
+        const result = await mongoDb.collection("comments").insertOne({...comment,_id:objectId});
         return response.setSuccess(result);
     }
     return response.setError("User not found");
