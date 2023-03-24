@@ -4,14 +4,16 @@ import { readFile } from "../../../utils/writeFile";
 
 
 export default async function ({ req }: AppContext<any>) {
-    const response = new ApiResponse()
+    const response = new ApiResponse();
     const imageUrl = req.params;
     const { id } = imageUrl;
+    let image;
     await readFile(`public/photos/${id}`, 'base64').then((data) => {
-        response.setSuccess(data);
+        image = data;
     }).catch((err) => {
         console.log(err);
     });
-    const buffer = Buffer.from(response.data, 'base64');
+    if(!image) return response.setError("Image not found");
+    const buffer = Buffer.from(image, 'base64');
     return new NextRouteResponse(NextRouteResponseStatus.OK, buffer, true, { 'Content-Type': 'image/jpeg' });
 }
