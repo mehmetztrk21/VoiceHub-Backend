@@ -43,6 +43,7 @@ export default async function ({ body, voiceHubDb, req }: AppContext<ReqisterBod
         const profilePhotoUrl = `public/photos/${objectId + "_profilePhoto." + profilePhoto.mimetype.split("/")[1]}`;
         await writeFile(profilePhotoUrl, profilePhoto.buffer).then(() => {
             body.profilePhotoUrl = profilePhotoUrl;
+            delete profilePhoto.buffer;
             body.profilePhotoInfo = profilePhoto;
             console.log("File saved");
         }).catch((err) => {
@@ -52,6 +53,7 @@ export default async function ({ body, voiceHubDb, req }: AppContext<ReqisterBod
     if (descriptionVoice && descriptionVoice.mimetype.includes("audio")) {
         const descriptionVoiceUrl = `public/voices/${objectId + "_descriptionVoice." + descriptionVoice.mimetype.split("/")[1]}`;
         await writeFile(descriptionVoiceUrl, descriptionVoice.buffer).then(() => {
+            delete descriptionVoice.buffer;
             body.descriptionVoiceUrl = descriptionVoiceUrl;
             body.descriptionVoiceInfo = descriptionVoice;
             console.log("File saved");
