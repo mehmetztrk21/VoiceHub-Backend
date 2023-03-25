@@ -1,9 +1,8 @@
 import { ApiResponse } from "fastapi-next";
-import md5 from 'md5';
-import moment from "moment";
 import { ObjectId } from "mongodb";
 import * as yup from 'yup';
 import { AppContext } from "../../AppContext";
+import { mappingUser } from "../../models/user";
 import { writeFile } from "../../utils/writeFile";
 interface ReqisterBody {
     name: string;
@@ -43,6 +42,7 @@ export default async function ({ body, voiceHubDb, req }: AppContext<ReqisterBod
         const profilePhotoUrl = `public/photos/${objectId + "_profilePhoto." + profilePhoto.mimetype.split("/")[1]}`;
         await writeFile(profilePhotoUrl, profilePhoto.buffer).then(() => {
             body.profilePhotoUrl = profilePhotoUrl;
+            delete profilePhoto.buffer;
             body.profilePhotoInfo = profilePhoto;
             console.log("File saved");
         }).catch((err) => {
@@ -52,6 +52,7 @@ export default async function ({ body, voiceHubDb, req }: AppContext<ReqisterBod
     if (descriptionVoice && descriptionVoice.mimetype.includes("audio")) {
         const descriptionVoiceUrl = `public/voices/${objectId + "_descriptionVoice." + descriptionVoice.mimetype.split("/")[1]}`;
         await writeFile(descriptionVoiceUrl, descriptionVoice.buffer).then(() => {
+            delete descriptionVoice.buffer;
             body.descriptionVoiceUrl = descriptionVoiceUrl;
             body.descriptionVoiceInfo = descriptionVoice;
             console.log("File saved");
@@ -59,33 +60,10 @@ export default async function ({ body, voiceHubDb, req }: AppContext<ReqisterBod
             console.log(err);
         });
     }
-    const user = await mongoDb.collection("users").insertOne({
-        _id: objectId,
-        name: body.name,
-        surname: body.surname,
-        username: body.username,
-        password: md5(body.password),
-        email: body.email,
-        phone: body.phone,
-        birthDay: moment(body.birthDay).toDate(),
-        gender: body.gender,
-        // countryId: body.countryId,
-        profilePhotoUrl: body.profilePhotoUrl,
-        descriptionVoiceUrl: body.descriptionVoiceUrl,
-        isSecretAccount: body.isSecretAccount == 1 ? true : false,
-        profilePhotoInfo: body.profilePhotoInfo,
-        descriptionVoiceInfo: body.descriptionVoiceInfo,
-        isTic: false,
-        posts: [],
-        followers: [],
-        followings: [],
-        savedPosts: [],
-        status: "active",
-        isDeleted: false,
-        createdAt: new Date(),
-        updatedAt: new Date()
-    });
-    if (user) {
+
+    let user = mappingUser(body);
+    const result = await mongoDb.collection("users").insertOne({ ...user, _id: objectId });
+    if (result) {
         let savedUser = await mongoDb.collection("users").findOne({ _id: objectId });
         savedUser = { ...savedUser, password: undefined };
         return response.setSuccess(savedUser, "User created");

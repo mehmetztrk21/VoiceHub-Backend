@@ -7,11 +7,17 @@ const options = new NextOptions();
 options.debug = true;
 options.openApi.enabled = true;
 options.swagger.enabled = true;
-options.openApi.title = "Getir MDU";
-options.openApi.description = "Getir MDU API";
+options.openApi.title = "Voice Hub API";
+options.openApi.description = "Voice Hub API Documentation";
 options.openApi.version = "1.0.0";
 options.openApi.https = false;
 options.openApi.http= true;
+options.cors = {
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+};
 options.routerDirs.push(path.join(__dirname, "routers"));
 //swagger
 const app = new NextApplication(options);

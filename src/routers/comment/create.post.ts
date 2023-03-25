@@ -1,15 +1,15 @@
 import { ApiResponse } from "fastapi-next";
 import { ObjectId } from "mongodb";
 import { AppContext } from "../../AppContext";
+import { mappingComment } from "../../models/comment";
 import { resolveToken } from "../../utils/resolveToken";
 import { writeFile } from "../../utils/writeFile";
 
-interface createPost {
-    Categories: string[];
-    ContentUrl: string;
+interface Request {
+    postId: string;
 }
 
-export default async function ({ body, session, jwt, voiceHubDb, req }: AppContext<createPost>) {
+export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
     var response = new ApiResponse();
     const mongoDb = await voiceHubDb.db("voiceHub");
     const resolved = await resolveToken(req);
@@ -21,31 +21,21 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
         content = req.files.find(f => f.fieldname == "content");
     }
     if (content && content.mimetype.includes("audio")) {
-        const contentUrl = `public/voices/${objectId + "_content." + content.mimetype.split("/")[1]}`;
+        const contentUrl = `public/voices/${objectId + "_comment." + content.mimetype.split("/")[1]}`;
         await writeFile(contentUrl, content.buffer).then(() => {
             body.contentUrl = contentUrl;
+            delete content.buffer;
             body.contentInfo = content;
             console.log("File saved");
         }).catch((err) => {
             console.log(err);
         });
     }
-    const post = {
-        _id: objectId,
-        categories: body.Categories,
-        contentUrl: body.ContentUrl,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        createdBy: resolved["_id"],
-        likes: [],
-        comments: [],
-        isDeleted: false
-    };
+    const comment = mappingComment({ ...body, createdBy: resolved["_id"] })
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
     if (user) {
-        const posts = await mongoDb.collection("posts").insertOne(post);
-        const userPosts = await mongoDb.collection("users").updateOne({ _id: new ObjectId(resolved["_id"]) }, { $push: { posts: post._id } });
-        return response.setSuccess(posts);
+        const result = await mongoDb.collection("comments").insertOne({...comment,_id:objectId});
+        return response.setSuccess(result);
     }
     return response.setError("User not found");
 }

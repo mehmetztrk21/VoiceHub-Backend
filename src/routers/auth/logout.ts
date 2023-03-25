@@ -1,12 +1,11 @@
 import { ApiResponse } from "fastapi-next";
+import jsonwebtoken from "jsonwebtoken";
 import { AppContext } from "../../AppContext";
-
-export default async function (ctx: AppContext) {
+import { resolveToken } from "../../utils/resolveToken";
+export default async function ({ session, jwt, req }: AppContext) {
     const response = new ApiResponse(false, "Error");
-    if (ctx.session.granted) {
-        ctx.session.granted = false;
-        ctx.session.token = null;
-        ctx.session.user = null;
-        return response.setSuccess("Logged out");
-    }
+    const resolved = await resolveToken(req);
+    if (!resolved) return response.setError("Unauthorized");
+    jsonwebtoken.sign({ _id: resolved["_id"] }, jwt.secret, { expiresIn: "0s" });
+    return response.setSuccess("Logged out");
 }
