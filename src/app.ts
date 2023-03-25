@@ -12,6 +12,12 @@ options.openApi.description = "Voice Hub API Documentation";
 options.openApi.version = "1.0.0";
 options.openApi.https = false;
 options.openApi.http= true;
+options.cors = {
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+};
 options.routerDirs.push(path.join(__dirname, "routers"));
 //swagger
 const app = new NextApplication(options);
