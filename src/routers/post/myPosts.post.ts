@@ -2,7 +2,10 @@ import { ApiResponse } from "fastapi-next";
 import { ObjectId } from "mongodb";
 import { AppContext } from "../../AppContext";
 import { resolveToken } from "../../utils/resolveToken";
-export default async function ({ body, voiceHubDb, req, session }: AppContext<any>) {
+interface Request {
+    isArchived: boolean;
+}
+export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
     var response = new ApiResponse();
     const mongoDb = await voiceHubDb.db("voiceHub");
     const resolved = await resolveToken(req);
@@ -15,7 +18,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<an
                 $match: {
                     $and: [
                         { createdBy: new ObjectId(user._id) },
-                        { status: "active" }
+                        { status: !body.isArchived ? "active" : "passive" }
                     ]
                 }
             },
