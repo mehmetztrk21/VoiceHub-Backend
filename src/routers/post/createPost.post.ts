@@ -21,6 +21,12 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
     if (Array.isArray(req.files)) {
         content = req.files.find(f => f.fieldname == "content");
     }
+    if(!Array.isArray(body.categories)){
+        let temp =[];
+        temp.push(body.categories);
+        body.categories = temp;
+    }
+
     if (content && content.mimetype.includes("audio")) {
         const contentUrl = `public/voices/${objectId + "_content." + content.mimetype.split("/")[1]}`;
         await writeFile(contentUrl, content.buffer).then(() => {
