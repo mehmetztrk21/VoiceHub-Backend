@@ -16,7 +16,21 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
         session.token = generatedToken;
         session.user = user;
         return new ApiResponse().setSuccess({
-            accessToken: generatedToken
+            accessToken: generatedToken,
+            user: {
+                _id: user._id,
+                name: user.name,
+                surname: user.surname,
+                phone: user.phone,
+                username: user.username,
+                email: user.email,  
+                descriptionVoiceUrl: user.descriptionVoiceUrl,
+                profilePhotoUrl: user.profilePhotoUrl,
+                followers: user.followers,
+                following: user.following,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
+            }
         });
     }
     else {
