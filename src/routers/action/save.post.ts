@@ -19,10 +19,10 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
             const isSaved = user.savedPosts?.includes(post._id);
             if (isSaved) {
                 await mongoDb.collection("users").updateOne({ _id: new ObjectId(user._id) }, { $pull: { savedPosts: post._id } });
-                return response.setSuccess("Post saved successfully");
+                return response.setSuccess("Post unsaved successfully");
             } else {
                 await mongoDb.collection("users").updateOne({ _id: new ObjectId(user._id) }, { $push: { savedPosts: post._id } });
-                return response.setSuccess("Post unsaved successfully");
+                return response.setSuccess("Post saved successfully");
             }
         } else {
             return response.setError("Post not found");
