@@ -16,7 +16,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
     if (user) {
         const post = await mongoDb.collection("posts").findOne({ _id: new ObjectId(body.postId) });
         if (post) {
-            const isLiked = post.likes?.includes(user._id);
+            const isLiked = post.likes?.find((i: any) => i.toString() == user._id.toString());
             if (isLiked) {
                 await mongoDb.collection("posts").updateOne({ _id: new ObjectId(post._id) }, { $pull: { likes: user._id } });
                 return response.setSuccess("Post unliked successfully");
