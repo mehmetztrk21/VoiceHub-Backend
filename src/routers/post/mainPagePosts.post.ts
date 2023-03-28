@@ -24,7 +24,6 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
             {
                 $match: {
                     $and: [
-                        { createdBy: new ObjectId(user._id) },
                         { status: "active" },
                         { isDeleted: false },
                         { $or: [{ createdBy: { $in: followingIds } }, { createdBy: new ObjectId(user._id) }] }
