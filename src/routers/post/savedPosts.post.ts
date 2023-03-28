@@ -58,7 +58,11 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                                 "createdBy.password": 0,
                                 "createdBy.profilePhotoInfo": 0,
                                 "createdBy.descriptionVoiceInfo": 0,
-                                "contentInfo": 0
+                                "contentInfo": 0,
+                                "createdBy.posts": 0,
+                                "createdBy.followers": 0,
+                                "createdBy.followings": 0,
+                                "createdBy.savedPosts": 0,
                             },
                         }, {
                             $sort: { createdAt: -1 }
@@ -81,7 +85,11 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                     "createdBy.password": 0,
                     "createdBy.profilePhotoInfo": 0,
                     "createdBy.descriptionVoiceInfo": 0,
-                    "contentInfo": 0
+                    "contentInfo": 0,
+                    "createdBy.posts": 0,
+                    "createdBy.followers": 0,
+                    "createdBy.followings": 0,
+                    "createdBy.savedPosts": 0,
                 },
             },
             {

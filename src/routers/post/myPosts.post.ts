@@ -61,9 +61,14 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                 }
             },
             {
+                $project: {
+                    "comments.contentInfo": 0,
+                    "contentInfo": 0
+            }
+            },
+            {
                 $sort: { createdAt: -1 }
             }
-            
         ]).toArray();
 
 
