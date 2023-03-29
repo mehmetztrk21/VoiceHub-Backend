@@ -27,7 +27,7 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
                 descriptionVoiceUrl: user.descriptionVoiceUrl,
                 profilePhotoUrl: user.profilePhotoUrl,
                 followers: user.followers,
-                following: user.following,
+                followings: user.followings,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             }
