@@ -9,7 +9,6 @@ interface Request {
 
 export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
     const response = new ApiResponse();
-    //get user followers
     const mongoDb = await voiceHubDb.db("voiceHub");
     const resolved = await resolveToken(req);
     if (!resolved) return response.setError("Unauthorized");
@@ -28,14 +27,14 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
         },
         {
             $project: {
-                "createdBy.password": 0,
-                "createdBy.profilePhotoInfo": 0,
-                "createdBy.descriptionVoiceInfo": 0,
+                "password": 0,
+                "profilePhotoInfo": 0,
+                "descriptionVoiceInfo": 0,
                 "contentInfo": 0,
-                "createdBy.posts": 0,
-                "createdBy.followers": 0,
-                "createdBy.followings": 0,
-                "createdBy.savedPosts": 0,
+                "posts": 0,
+                "followers": 0,
+                "followings": 0,
+                "savedPosts": 0,
             },
         },
         {
