@@ -21,8 +21,8 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
     if (Array.isArray(req.files)) {
         content = req.files.find(f => f.fieldname == "content");
     }
-    if(!Array.isArray(body.categories)){
-        let temp =[];
+    if (!Array.isArray(body.categories)) {
+        let temp = [];
         temp.push(body.categories);
         body.categories = temp;
     }
@@ -41,8 +41,8 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
     const post = mappingPost({ ...body, createdBy: resolved["_id"] })
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
     if (user) {
-        const posts = await mongoDb.collection("posts").insertOne({...post,_id:objectId});
-        await mongoDb.collection("users").updateOne({ _id: new ObjectId(resolved["_id"]) }, { $push: { posts: post._id } });
+        const posts = await mongoDb.collection("posts").insertOne({ ...post, _id: objectId });
+        await mongoDb.collection("users").updateOne({ _id: new ObjectId(resolved["_id"]) }, { $push: { posts: objectId } });
         return response.setSuccess(posts);
     }
     return response.setError("User not found");
