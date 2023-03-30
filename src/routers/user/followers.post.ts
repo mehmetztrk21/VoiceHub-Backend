@@ -32,8 +32,6 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                 "descriptionVoiceInfo": 0,
                 "contentInfo": 0,
                 "posts": 0,
-                "followers": 0,
-                "followings": 0,
                 "savedPosts": 0,
             },
         },
