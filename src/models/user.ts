@@ -30,19 +30,19 @@ export class User {
 
 export const mappingUser= (body: any) => {
     let user = new User();
-    user.name = body.name;
-    user.surname = body.surname;
-    user.username = body.username;
-    user.password = md5(body.password);
-    user.email = body.email;
-    user.phone = body.phone;
-    user.birthDay = moment(body.birthDay).toDate();
-    user.gender = body.gender;
-    user.profilePhotoUrl = body.profilePhotoUrl;
-    user.descriptionVoiceUrl = body.descriptionVoiceUrl;
+    user.name = body.name || null;
+    user.surname = body.surname || null;
+    user.username = body.username || null;
+    user.password = md5(body.password) || null;
+    user.email = body.email ||null;
+    user.phone = body.phone || null;
+    user.birthDay = moment(body.birthDay).toDate() || null;
+    user.gender = body.gender || null;
+    user.profilePhotoUrl = body.profilePhotoUrl || null;
+    user.descriptionVoiceUrl = body.descriptionVoiceUrl || null;
     user.isSecretAccount = body.isSecretAccount == 1 ? true : false;
-    user.profilePhotoInfo = body.profilePhotoInfo;
-    user.descriptionVoiceInfo = body.descriptionVoiceInfo;
+    user.profilePhotoInfo = body.profilePhotoInfo || null;
+    user.descriptionVoiceInfo = body.descriptionVoiceInfo || null;
     user.isTic = false;
     user.posts = [];
     user.followers = [];

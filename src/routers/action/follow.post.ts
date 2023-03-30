@@ -22,8 +22,8 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                 await mongoDb.collection("users").updateOne({ _id: new ObjectId(followedUser._id) }, { $pull: { followers: user._id } });
                 return response.setSuccess("Unfollowed successfully");
             } else {
-                await mongoDb.collection("users").updateOne({ _id: new ObjectId(user._id) }, { $push: { following: { _id: followedUser._id, name: followedUser.name, surname: followedUser.surname, username: followedUser.username, profilePhotoUrl: followedUser.profilePhotoUrl } } });
-                await mongoDb.collection("users").updateOne({ _id: new ObjectId(followedUser._id) }, { $push: { following: { _id: user._id, name: user.name, surname: user.surname, username: user.username, profilePhotoUrl: user.profilePhotoUrl } } });
+                await mongoDb.collection("users").updateOne({ _id: new ObjectId(user._id) }, { $push: { following: followedUser._id } });
+                await mongoDb.collection("users").updateOne({ _id: new ObjectId(followedUser._id) }, { $push: { followers: user._id } });
                 return response.setSuccess("Followed successfully");
             }
         } else {
