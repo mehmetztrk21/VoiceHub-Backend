@@ -4,15 +4,16 @@ import { AppContext } from "../../AppContext";
 import { resolveToken } from "../../utils/resolveToken";
 interface Request {
     isArchived: boolean;
+    userId: string;
 }
 export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
     var response = new ApiResponse();
     const mongoDb = await voiceHubDb.db("voiceHub");
     const resolved = await resolveToken(req);
     if (!resolved) return response.setError("Unauthorized");
-    const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
-    if (user) {
-        //post with comments
+    let user = null;
+    if (body.userId) user = await mongoDb.collection("users").findOne({ _id: new ObjectId(body.userId) });
+    else user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) }); if (user) {
         const posts = await mongoDb.collection("posts").aggregate([
             {
                 $match: {
@@ -61,9 +62,14 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                 }
             },
             {
+                $project: {
+                    "comments.contentInfo": 0,
+                    "contentInfo": 0
+                }
+            },
+            {
                 $sort: { createdAt: -1 }
             }
-            
         ]).toArray();
 
 

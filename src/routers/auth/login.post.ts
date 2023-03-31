@@ -1,18 +1,12 @@
 import { ApiResponse } from "fastapi-next";
 import jsonwebtoken from "jsonwebtoken";
 import md5 from 'md5';
-import * as yup from 'yup';
 import { AppContext } from "../../AppContext";
 
 interface Request {
     username: string;
     password: string;
 }
-export const validate = yup.object().shape({
-    username: yup.string().required().min(3),
-    password: yup.string().required().min(3)
-});
-
 export default async function ({ body, session, jwt, voiceHubDb, req }: AppContext<Request>) {
     const mongoDb = await voiceHubDb.db("voiceHub");
     const user = await mongoDb.collection("users").findOne({ $and: [{ username: body.username }, { password: md5(body.password) }] });
@@ -22,7 +16,21 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
         session.token = generatedToken;
         session.user = user;
         return new ApiResponse().setSuccess({
-            accessToken: generatedToken
+            accessToken: generatedToken,
+            user: {
+                _id: user._id,
+                name: user.name,
+                surname: user.surname,
+                phone: user.phone,
+                username: user.username,
+                email: user.email,  
+                descriptionVoiceUrl: user.descriptionVoiceUrl,
+                profilePhotoUrl: user.profilePhotoUrl,
+                followers: user.followers,
+                followings: user.followings,
+                createdAt: user.createdAt,
+                updatedAt: user.updatedAt
+            }
         });
     }
     else {

@@ -18,7 +18,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
     const objectId = new ObjectId();
     let content;
     if (Array.isArray(req.files)) {
-        content = req.files.find(f => f.fieldname == "content");
+        content = req.files.find(f => f.fieldname == "comment");
     }
     if (content && content.mimetype.includes("audio")) {
         const contentUrl = `public/voices/${objectId + "_comment." + content.mimetype.split("/")[1]}`;
