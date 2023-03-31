@@ -6,6 +6,7 @@ import * as yup from "yup";
 interface Request {
     page: number;
     limit: number;
+    category: string;
 }
 export const validate = yup.object().shape({
     page: yup.number().required(),
@@ -23,7 +24,8 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                 $match: {
                     $and: [
                         { status: "active" },
-                        { isDeleted: false }
+                        { isDeleted: false },
+                        { categories: { $in: [body.category] } }
                     ]
                 }
             },
