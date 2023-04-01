@@ -25,12 +25,6 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
             if (Array.isArray(req.files)) {
                 message = req.files.find(f => f.fieldname == "message");
             }
-            if (!Array.isArray(body.categories)) {
-                let temp = [];
-                temp.push(body.categories);
-                body.categories = temp;
-            }
-
             if (message && message.mimetype.includes("audio")) {
                 const messageUrl = `public/voices/${objectId + "_message." + message.mimetype.split("/")[1]}`;
                 await writeFile(messageUrl, message.buffer).then(() => {
@@ -64,6 +58,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
             }
 
         }
+        return response.setError("Receiver not found");
     }
     return response.setError("Unauthorized");
 }
