@@ -1,8 +1,8 @@
 import { ApiResponse } from "fastapi-next";
 import { ObjectId } from "mongodb";
+import * as yup from "yup";
 import { AppContext } from "../../AppContext";
 import { resolveToken } from "../../utils/resolveToken";
-import * as yup from "yup";
 interface Request {
     page: number;
     limit: number;
@@ -25,7 +25,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                     $and: [
                         { status: "active" },
                         { isDeleted: false },
-                       body.categories ? { categories: { $in: [body.category] } } : {}
+                        body.category == "all" ? { categories: { $in: [body.category] } } : {}
                     ]
                 }
             },
@@ -64,7 +64,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                                 "createdBy.followings": 0,
                                 "createdBy.savedPosts": 0,
                             },
-                        }, 
+                        },
                         {
                             $sort: { createdAt: -1 }
                         }
