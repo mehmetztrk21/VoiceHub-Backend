@@ -15,9 +15,9 @@ export class Post {
 
 export const mappingPost= (body: any) => {
   let post = new Post();
-    post.categories = body.categories;
-    post.contentUrl = body.contentUrl;
-    post.contentInfo = body.contentInfo;
+    post.categories = body.categories || [];
+    post.contentUrl = body.contentUrl || "" ;
+    post.contentInfo = body.contentInfo || {};
     post.createdAt = new Date();
     post.updatedAt = new Date();
     post.createdBy = new ObjectId(body.createdBy);
