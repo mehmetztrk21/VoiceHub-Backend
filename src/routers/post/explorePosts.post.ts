@@ -25,7 +25,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                     $and: [
                         { status: "active" },
                         { isDeleted: false },
-                        { categories: { $in: [body.category] } }
+                       body.categories ? { categories: { $in: [body.category] } } : {}
                     ]
                 }
             },
