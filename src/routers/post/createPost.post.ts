@@ -21,7 +21,7 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
     if (Array.isArray(req.files)) {
         content = req.files.find(f => f.fieldname == "content");
     }
-    if (!Array.isArray(body.categories)) {
+    if (body.categories) {
         let temp = [];
         temp.push(body.categories);
         body.categories = temp;

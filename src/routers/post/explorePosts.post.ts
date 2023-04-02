@@ -1,11 +1,12 @@
 import { ApiResponse } from "fastapi-next";
 import { ObjectId } from "mongodb";
+import * as yup from "yup";
 import { AppContext } from "../../AppContext";
 import { resolveToken } from "../../utils/resolveToken";
-import * as yup from "yup";
 interface Request {
     page: number;
     limit: number;
+    category: string;
 }
 export const validate = yup.object().shape({
     page: yup.number().required(),
@@ -23,7 +24,8 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                 $match: {
                     $and: [
                         { status: "active" },
-                        { isDeleted: false }
+                        { isDeleted: false },
+                        body.category != "all" ? { categories: { $in: [body.category] } } : {}
                     ]
                 }
             },
@@ -62,7 +64,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                                 "createdBy.followings": 0,
                                 "createdBy.savedPosts": 0,
                             },
-                        }, 
+                        },
                         {
                             $sort: { createdAt: -1 }
                         }
