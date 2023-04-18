@@ -16,6 +16,10 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
     if (!user) return response.setError("Unauthorized");
     const post = await mongoDb.collection("posts").findOne({ _id: new ObjectId(body.postId) });
     if (!post) return response.setError("Post not found");
-    await mongoDb.collection("posts").updateOne({ _id: new ObjectId(post._id) }, { isLikesVisible: !post.isLikesVisible ?? true });
+    
+
+await mongoDb.collection("posts").updateOne({ _id: new ObjectId(post._id) }, { $set: { isLikesVisible: !(post.isLikesVisible ?? true) } });
+
+
     return response.setSuccess("Success");
 }
