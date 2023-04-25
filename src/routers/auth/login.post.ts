@@ -30,6 +30,7 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
                 followings: user.followings,
                 savedPosts: user.savedPosts,
                 isSecretAccount: user.isSecretAccount,
+                isTic: user.isTic,
                 createdAt: user.createdAt,
                 updatedAt: user.updatedAt
             }

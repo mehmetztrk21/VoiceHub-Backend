@@ -16,7 +16,7 @@ interface ReqisterBody {
     countryId: number;
     profilePhotoUrl: string;
     descriptionVoiceUrl: string;
-    isSecretAccount: boolean
+    isSecretAccount: boolean;
 }
 
 export const validate = yup.object().shape({
