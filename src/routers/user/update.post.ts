@@ -11,6 +11,9 @@ interface Request {
     phone: string;
     birthDay: string;
     gender: string;
+    isSecretAccount: boolean;
+    // profilePhoto: any; File olarak geliyor
+    // descriptionVoice: any; File olarak geliyor
 }
 
 export default async function ({ body, voiceHubDb, req }: AppContext<Request>) {
@@ -59,6 +62,7 @@ export default async function ({ body, voiceHubDb, req }: AppContext<Request>) {
             descriptionVoiceUrl: body.descriptionVoiceUrl || user.descriptionVoiceUrl,
             profilePhotoInfo: body.profilePhotoInfo || user.profilePhotoInfo,
             descriptionVoiceInfo: body.descriptionVoiceInfo || user.descriptionVoiceInfo,
+            isSecretAccount: body.isSecretAccount || user.isSecretAccount,
         }
     });
     if (result) {

@@ -15,5 +15,5 @@ export default async function ({ req }: AppContext<any>) {
     });
     if(!voice) return response.setError("Voice not found");
     const buffer = Buffer.from(voice, 'base64');
-    return new NextRouteResponse(NextRouteResponseStatus.OK, buffer, true, { 'Content-Type': 'image/mpeg' });
+    return new NextRouteResponse(NextRouteResponseStatus.OK, buffer, true, { 'Content-Type': 'audio/mp3' });
 }

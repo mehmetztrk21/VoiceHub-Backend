@@ -9,6 +9,7 @@ export class Post {
     createdAt: Date;
     updatedAt: Date;
     likes: ObjectId[];
+    isLikesVisible: boolean;
     isDeleted: boolean;
     status: string;
 }
@@ -22,6 +23,7 @@ export const mappingPost= (body: any) => {
     post.updatedAt = new Date();
     post.createdBy = new ObjectId(body.createdBy);
     post.likes = [];
+    post.isLikesVisible = true;
     post.isDeleted = false;
     post.status = "active";
     return post;

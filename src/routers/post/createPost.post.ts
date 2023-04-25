@@ -41,8 +41,9 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
     const post = mappingPost({ ...body, createdBy: resolved["_id"] })
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
     if (user) {
-        const posts = await mongoDb.collection("posts").insertOne({ ...post, _id: objectId });
+        await mongoDb.collection("posts").insertOne({ ...post, _id: objectId });
         await mongoDb.collection("users").updateOne({ _id: new ObjectId(resolved["_id"]) }, { $push: { posts: objectId } });
+        const posts = await mongoDb.collection("posts").find({ createdBy: new ObjectId(resolved["_id"]) }).toArray();
         return response.setSuccess(posts);
     }
     return response.setError("User not found");
