@@ -29,7 +29,7 @@ export default async function ({ body, voiceHubDb, req }: AppContext<Request>) {
         descriptionVoice = req.files.find(f => f.fieldname == "descriptionVoice");
     }
     if (profilePhoto && profilePhoto.mimetype.includes("image")) {
-        const profilePhotoUrl = `public/photos/${resolved["_id"]} + "_profilePhoto." + profilePhoto.mimetype.split("/")[1]}`;
+        const profilePhotoUrl = `public/photos/${resolved["_id"]}_profilePhoto.${profilePhoto.mimetype.split("/")[1]}`;
         await writeFile(profilePhotoUrl, profilePhoto.buffer).then(() => {
             body.profilePhotoUrl = profilePhotoUrl;
             delete profilePhoto.buffer;
@@ -39,7 +39,7 @@ export default async function ({ body, voiceHubDb, req }: AppContext<Request>) {
             console.log(err);
         });
     }
-    if (descriptionVoice && descriptionVoice.mimetype.includes("audio")) {
+    if (descriptionVoice && (descriptionVoice.mimetype.includes("audio") || descriptionVoice.mimetype.includes("video")) ) {
         const descriptionVoiceUrl = `public/voices/${resolved["_id"] + "_descriptionVoice." + descriptionVoice.mimetype.split("/")[1]}`;
         await writeFile(descriptionVoiceUrl, descriptionVoice.buffer).then(() => {
             delete descriptionVoice.buffer;
