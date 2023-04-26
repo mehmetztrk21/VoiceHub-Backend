@@ -16,13 +16,13 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
     if (user) {
         const followedUser = await mongoDb.collection("users").findOne({ _id: new ObjectId(body.userId) });
         if (followedUser) {
-            const isFollowing = user.following?.find((i: any) => i.toString() == followedUser._id.toString());
+            const isFollowing = user.followings?.find((i: any) => i.toString() == followedUser._id.toString());
             if (isFollowing) {
-                await mongoDb.collection("users").updateOne({ _id: new ObjectId(user._id) }, { $pull: { following: followedUser._id } });
+                await mongoDb.collection("users").updateOne({ _id: new ObjectId(user._id) }, { $pull: { followings: followedUser._id } });
                 await mongoDb.collection("users").updateOne({ _id: new ObjectId(followedUser._id) }, { $pull: { followers: user._id } });
                 return response.setSuccess("Unfollowed successfully");
             } else {
-                await mongoDb.collection("users").updateOne({ _id: new ObjectId(user._id) }, { $push: { following: followedUser._id } });
+                await mongoDb.collection("users").updateOne({ _id: new ObjectId(user._id) }, { $push: { followings: followedUser._id } });
                 await mongoDb.collection("users").updateOne({ _id: new ObjectId(followedUser._id) }, { $push: { followers: user._id } });
                 return response.setSuccess("Followed successfully");
             }

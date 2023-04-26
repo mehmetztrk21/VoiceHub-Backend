@@ -19,7 +19,8 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                 $match: {
                     $and: [
                         { createdBy: new ObjectId(user._id) },
-                        { status: !body.isArchived ? "active" : "passive" }
+                        { status: !body.isArchived ? "active" : "passive" },
+                        { isDeleted: false }
                     ]
                 }
             },
