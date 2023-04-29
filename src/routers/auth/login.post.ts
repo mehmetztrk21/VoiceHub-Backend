@@ -9,7 +9,7 @@ interface Request {
 }
 export default async function ({ body, session, jwt, voiceHubDb, req }: AppContext<Request>) {
     const mongoDb = await voiceHubDb.db("voiceHub");
-    const user = await mongoDb.collection("users").findOne({ $and: [{ username: body.username }, { password: md5(body.password) }] });
+    const user = await mongoDb.collection("users").findOne({ $and: [{ username: body.username }, { password: md5(body.password) }] }, { projection: { password: 0, descriptionVoiceInfo: 0, profilePhotoInfo: 0 } });
     if (user) {
         const generatedToken = await jsonwebtoken.sign({ _id: user._id }, jwt.secret, { expiresIn: "100y" });
         session.granted = true;
@@ -17,23 +17,7 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
         session.user = user;
         return new ApiResponse().setSuccess({
             accessToken: generatedToken,
-            user: {
-                _id: user._id,
-                name: user.name,
-                surname: user.surname,
-                phone: user.phone,
-                username: user.username,
-                email: user.email,  
-                descriptionVoiceUrl: user.descriptionVoiceUrl,
-                profilePhotoUrl: user.profilePhotoUrl,
-                followers: user.followers,
-                followings: user.followings,
-                savedPosts: user.savedPosts,
-                isSecretAccount: user.isSecretAccount,
-                isTic: user.isTic,
-                createdAt: user.createdAt,
-                updatedAt: user.updatedAt
-            }
+            user: {...user}
         });
     }
     else {
