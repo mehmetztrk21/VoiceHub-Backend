@@ -27,7 +27,7 @@ export const validate = yup.object().shape({
 
 export default async function ({ body, voiceHubDb, req }: AppContext<ReqisterBody>) {
     var response = new ApiResponse();
-    const mongoDb = await voiceHubDb.db("voiceHub");
+    const mongoDb =  voiceHubDb.db("voiceHub");
     const existsUser = await mongoDb.collection("users").findOne({ $or: [{ username: body.username }, { email: body.email }] });
     if (existsUser) {
         return response.setError("Email or Username is already exists");
