@@ -8,12 +8,17 @@ export default async function ({ req }: AppContext<any>) {
     const voiceUrl = req.params;
     const { id } = voiceUrl;
     let voice;
-    await readFile(`public/voices/${id}`, 'base64').then((data) => {
-        voice = data;
-    }).catch((err) => {
-        console.log(err);
-    });
-    if(!voice) return response.setError("Voice not found");
+    await readFile(`public/voices/${id}`, 'base64')
+        .then((data) => {
+            voice = data;
+        }).catch((err) => {
+            console.log(err);
+        });
+    if (!voice) return response.setError("Voice not found");
     const buffer = Buffer.from(voice, 'base64');
-    return new NextRouteResponse(NextRouteResponseStatus.OK, buffer, true, { 'Content-Type': 'audio/mp3' });
+    return new NextRouteResponse(
+        NextRouteResponseStatus.OK,
+        buffer,
+        true,
+        { 'Content-Type': 'audio/mp3' });
 }

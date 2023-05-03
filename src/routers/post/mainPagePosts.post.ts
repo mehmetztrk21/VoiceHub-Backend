@@ -19,7 +19,6 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
     if (user) {
         const followingIds = user.followings?.map((id: string) => new ObjectId(id)) || [];
-
         const posts = await mongoDb.collection("posts").aggregate([
             {
                 $match: {

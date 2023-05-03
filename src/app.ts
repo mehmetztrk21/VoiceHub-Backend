@@ -29,14 +29,10 @@ async function main() {
     }
     const EventEmitter = require('events');
     const emitter = new EventEmitter();
-
     emitter.setMaxListeners(2000);
-    const appdb = new NextKnexPlugin(config.db, "db");
 
-    app.registry.register(appdb);
     app.registry.register(new NextFileResolverPlugin());
     app.registry.register(new NextMongoPlugin(config.mongodb, "voiceHubDb"));
-
     // ? JWT
     app.registerJWT({
         anonymousPaths: [
@@ -51,7 +47,6 @@ async function main() {
             expiresIn: "1d"
         }
     });
-
     app.registry.registerObject("jwt", app.jwtController);
 
     await app.registerInMemorySession({
@@ -59,8 +54,6 @@ async function main() {
 
     // ? Init
     await app.init();
-
-
     // ? Start
     await app.start();
 }
