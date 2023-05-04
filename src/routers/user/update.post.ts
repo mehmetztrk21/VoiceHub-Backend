@@ -23,6 +23,8 @@ export default async function ({ body, voiceHubDb, req }: AppContext<Request>) {
     if (!resolved) return response.setError("Unauthorized");
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
     if (!user) return response.setError("User not found");
+    const isUsernameOrEmailExists = await mongoDb.collection("users").findOne({ $or: [{ username: body.username }, { email: body.email }] });
+    if (isUsernameOrEmailExists) return response.setError("Username or email already exists");
     let profilePhoto, descriptionVoice;
     if (Array.isArray(req.files)) {
         profilePhoto = req.files.find(f => f.fieldname == "profilePhoto");
@@ -50,8 +52,6 @@ export default async function ({ body, voiceHubDb, req }: AppContext<Request>) {
             console.log(err);
         });
     }
-    const isUsernameOrEmailExists = await mongoDb.collection("users").findOne({ $or: [{ username: body.username }, { email: body.email }] });
-    if (isUsernameOrEmailExists) return response.setError("Username or email already exists");
     const result = await mongoDb.collection("users").updateOne({ _id: new ObjectId(user._id) }, {
         $set: {
             name: body.name || user.name,
