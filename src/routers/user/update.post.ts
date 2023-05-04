@@ -39,7 +39,7 @@ export default async function ({ body, voiceHubDb, req }: AppContext<Request>) {
             console.log(err);
         });
     }
-    if (descriptionVoice && (descriptionVoice.mimetype.includes("audio") || descriptionVoice.mimetype.includes("video")) ) {
+    if (descriptionVoice && (descriptionVoice.mimetype.includes("audio") || descriptionVoice.mimetype.includes("video"))) {
         const descriptionVoiceUrl = `public/voices/${resolved["_id"] + "_descriptionVoice." + descriptionVoice.mimetype.split("/")[1]}`;
         await writeFile(descriptionVoiceUrl, descriptionVoice.buffer).then(() => {
             delete descriptionVoice.buffer;
@@ -50,6 +50,8 @@ export default async function ({ body, voiceHubDb, req }: AppContext<Request>) {
             console.log(err);
         });
     }
+    const isUsernameOrEmailExists = await mongoDb.collection("users").findOne({ $or: [{ username: body.username }, { email: body.email }] });
+    if (isUsernameOrEmailExists) return response.setError("Username or email already exists");
     const result = await mongoDb.collection("users").updateOne({ _id: new ObjectId(user._id) }, {
         $set: {
             name: body.name || user.name,

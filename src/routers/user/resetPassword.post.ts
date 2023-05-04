@@ -1,9 +1,8 @@
 import { AppContext } from "../../AppContext";
 
+export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
+   
 
-
-export default async function ({ body, voiceHubDb, req, session }: AppContext<any>) {
-    
     // reset password 
     // send email to user with reset password link
     // user clicks on link and is redirected to reset password page

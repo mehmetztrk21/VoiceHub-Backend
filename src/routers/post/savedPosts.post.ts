@@ -25,6 +25,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                     $and: [
                         { status: "active" },
                         { isDeleted: false },
+                        { createdBy: { $nin: user.blockedUsers } },
                         { _id: { $in: savedPostIds } }
                     ]
                 }
