@@ -25,6 +25,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                     $and: [
                         { status: "active" },
                         { isDeleted: false },
+                        { createdBy: { $nin: user.blockedUsers } },
                         { $or: [{ createdBy: { $in: followingIds } }, { createdBy: new ObjectId(user._id) }] }
                     ]
                 }
@@ -64,7 +65,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                                 "createdBy.followings": 0,
                                 "createdBy.savedPosts": 0,
                             },
-                        }, 
+                        },
                         {
                             $sort: { createdAt: -1 }
                         }
