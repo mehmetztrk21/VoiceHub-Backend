@@ -22,6 +22,7 @@ export class User {
     followers: ObjectId[];
     followings: ObjectId[];
     savedPosts: ObjectId[];
+    blockedUsers: ObjectId[];
     status: string;
     isDeleted: boolean;
     createdAt: Date;
@@ -48,6 +49,7 @@ export const mappingUser= (body: any) => {
     user.followers = [];
     user.followings = [];
     user.savedPosts = [];
+    user.blockedUsers = [];
     user.status = "active";
     user.isDeleted = false;
     user.createdAt = new Date();
