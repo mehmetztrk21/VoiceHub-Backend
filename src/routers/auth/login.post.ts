@@ -20,6 +20,8 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
         session.granted = true;
         session.token = generatedToken;
         session.user = user;
+        if (user.status === "passive")
+            await mongoDb.collection("users").updateOne({ _id: user._id }, { $set: { status: "active" } });
         return new ApiResponse().setSuccess({
             accessToken: generatedToken,
             user: { ...user }
