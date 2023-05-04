@@ -33,13 +33,17 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                 }
             },
             {
+                $sort: { followers: -1 }
+            },
+            {
                 $project: {
                     "password": 0,
                     "profilePhotoInfo": 0,
                     "descriptionVoiceInfo": 0,
                     "posts": 0
                 }
-            }
+            },
+           
         ]).toArray();
         return response.setSuccess(users);
     }
