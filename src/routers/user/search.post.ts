@@ -26,9 +26,10 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                             $or: [
                                 { username: { $regex: body.search, $options: "i" } },
                                 { name: { $regex: body.search, $options: "i" } },
-                                { surname: { $regex: body.search, $options: "i" } }
+                                { surname: { $regex: body.search, $options: "i" } },
                             ]
-                        }
+                        },
+                        { _id: { $nin: user.blockedUsers } }
                     ]
                 }
             },
@@ -43,7 +44,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                     "posts": 0
                 }
             },
-           
+
         ]).toArray();
         return response.setSuccess(users);
     }
