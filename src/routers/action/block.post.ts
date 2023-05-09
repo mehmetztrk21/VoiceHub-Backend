@@ -27,7 +27,12 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
     await mongoDb.collection("users").updateOne({ _id: new ObjectId(resolved["_id"]) },
         {
             $push: { blockedUsers: blockedUser._id },
-            $pull: { followers: blockedUser._id, followings: blockedUser._id },
+            $pull: { followers: blockedUser._id, followings: blockedUser._id }
         });
+    await mongoDb.collection("users").updateOne({ _id: new ObjectId(blockedUser._id) },
+        {
+            $pull: { followers: user._id, followings: user._id }
+        });
+
     return response.setSuccess("User blocked successfully");
 }
