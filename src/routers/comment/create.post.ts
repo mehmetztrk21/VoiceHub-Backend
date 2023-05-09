@@ -12,7 +12,7 @@ interface Request {
 export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
     var response = new ApiResponse();
     const mongoDb = await voiceHubDb.db("voiceHub");
-    const resolved = await resolveToken(req);
+    const resolved = await resolveToken(req, mongoDb);
     if (!resolved) return response.setError("Unauthorized");
 
     const objectId = new ObjectId();

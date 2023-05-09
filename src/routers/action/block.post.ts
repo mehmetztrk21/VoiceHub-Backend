@@ -14,7 +14,7 @@ export const validate = yup.object().shape({
 export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
     const response = new ApiResponse();
     const mongoDb = await voiceHubDb.db("voiceHub");
-    const resolved = await resolveToken(req);
+    const resolved = await resolveToken(req, mongoDb);
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
     if (!user) return response.setError("Unauthorized");
     const blockedUser = await mongoDb.collection("users").findOne({ _id: new ObjectId(body.userId) });
@@ -24,6 +24,15 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
         await mongoDb.collection("users").updateOne({ _id: new ObjectId(resolved["_id"]) }, { $pull: { blockedUsers: blockedUser._id } });
         return response.setSuccess("User unblocked successfully");
     }
-    await mongoDb.collection("users").updateOne({ _id: new ObjectId(resolved["_id"]) }, { $push: { blockedUsers: blockedUser._id } });
+    await mongoDb.collection("users").updateOne({ _id: new ObjectId(resolved["_id"]) },
+        {
+            $push: { blockedUsers: blockedUser._id },
+            $pull: { followers: blockedUser._id, followings: blockedUser._id }
+        });
+    await mongoDb.collection("users").updateOne({ _id: new ObjectId(blockedUser._id) },
+        {
+            $pull: { followers: user._id, followings: user._id }
+        });
+
     return response.setSuccess("User blocked successfully");
 }

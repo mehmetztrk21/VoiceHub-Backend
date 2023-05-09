@@ -7,7 +7,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
     //user chat list with last message (chat and message collection)
     var response = new ApiResponse();
     const mongoDb = await voiceHubDb.db("voiceHub");
-    const resolved = await resolveToken(req);
+    const resolved = await resolveToken(req, mongoDb);
     if (!resolved) return response.setError("Unauthorized");
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(resolved["_id"]) });
     if (!user) return response.setError("Unauthorized");

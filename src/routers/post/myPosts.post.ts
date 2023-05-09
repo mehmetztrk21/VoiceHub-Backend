@@ -9,7 +9,7 @@ interface Request {
 export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
     var response = new ApiResponse();
     const mongoDb = await voiceHubDb.db("voiceHub");
-    const resolved = await resolveToken(req);
+    const resolved = await resolveToken(req, mongoDb);
     if (!resolved) return response.setError("Unauthorized");
     let user = null;
     if (body.userId) user = await mongoDb.collection("users").findOne({ _id: new ObjectId(body.userId) });
@@ -34,7 +34,8 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                                 $expr: {
                                     $and: [
                                         { $eq: ["$postId", "$$postId"] },
-                                        { $eq: ["$isDeleted", false] }
+                                        { $eq: ["$isDeleted", false] },
+                                        { "$not": { "$in": ["$createdBy", user.blockedUsers] } }
                                     ]
                                 }
                             }
@@ -44,7 +45,19 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
                                 from: "users",
                                 localField: "createdBy",
                                 foreignField: "_id",
-                                as: "createdBy"
+                                as: "createdBy",
+                                pipeline: [
+                                    {
+                                        $match: {
+                                            $expr: {
+                                                $and: [
+                                                    { $eq: ["$status", "active"] }
+                                                ]
+                                            },
+
+                                        }
+                                    }
+                                ]
                             }
                         },
                         { $unwind: "$createdBy" },
