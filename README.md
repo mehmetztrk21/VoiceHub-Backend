@@ -1,4 +1,4 @@
-# VoiceHub-Mobile
+# VoiceHub-Backend
 
 The current social media applications mostly focus on text, images, and videos, and the limited use of sound points to a communication problem. In this context, users can only express themselves with written or visual expressions, which may be inadequate in some cases. Therefore, voice-based social media applications can provide users with a different communication experience, offering a more authentic and personal expression opportunity. In this regard, the VoiceHub project aims to provide a solution for voice-based socialization platforms, increasing the use of sound in social media sharing, and aiming to provide a richer and deeper communication experience.
 
