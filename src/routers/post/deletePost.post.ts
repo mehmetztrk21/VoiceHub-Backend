@@ -10,7 +10,7 @@ interface deletePostRequest {
 export default async function ({ body, session, jwt, voiceHubDb, req }: AppContext<deletePostRequest>) {
     const response = new ApiResponse();
     const mongoDb = voiceHubDb.db("voiceHub");
-    const resolved = await resolveToken(req);
+    const resolved = await resolveToken(req, mongoDb);
     if (!resolved) return response.setError("Unauthorized");
     const post = await mongoDb.collection("posts").findOne({ $and: [{ _id: new ObjectId(body.id) }, { createdBy: new ObjectId(resolved["_id"]) }] });
     if (post) {

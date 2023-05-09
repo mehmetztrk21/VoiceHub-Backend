@@ -20,8 +20,20 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
         session.granted = true;
         session.token = generatedToken;
         session.user = user;
-        if (user.status === "passive")
+        if (user.status === "passive") {
             await mongoDb.collection("users").updateOne({ _id: user._id }, { $set: { status: "active" } });
+            await mongoDb.collection("users").updateMany({ _id: { $in: user.followers } }, { $push: { followings: user._id } as any });
+            await mongoDb.collection("users").updateMany({ _id: { $in: user.followings } }, { $push: { followers: user._id } as any });
+        }
+        await mongoDb.collection("loginLogs").insertOne({
+            userId: user._id,
+            token: generatedToken,
+            tokenStatus: "active",
+            ip: req.ip,
+            userAgent: req.headers["user-agent"],
+            createdAt: new Date(),
+            updatedAt: new Date()
+        });
         return new ApiResponse().setSuccess({
             accessToken: generatedToken,
             user: { ...user }

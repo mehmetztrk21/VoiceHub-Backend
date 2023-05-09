@@ -11,7 +11,7 @@ interface Request {
 export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
     var response = new ApiResponse();
     const mongoDb = await voiceHubDb.db("voiceHub");
-    const resolved = await resolveToken(req);
+    const resolved = await resolveToken(req, mongoDb);
     if (!resolved) return response.setError("Unauthorized");
     const post = await mongoDb.collection("posts").findOne({ $and: [{ _id: new ObjectId(body.id) }, { createdBy: new ObjectId(resolved["_id"]) }, { isDeleted: false }] });
     if (!post) return response.setError("Not Found");

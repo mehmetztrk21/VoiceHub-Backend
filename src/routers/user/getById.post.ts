@@ -10,7 +10,7 @@ interface Request {
 export default async function ({ body, voiceHubDb, req, session }: AppContext<Request>) {
     var response = new ApiResponse();
     const mongoDb = await voiceHubDb.db("voiceHub");
-    const resolved = await resolveToken(req);
+    const resolved = await resolveToken(req, mongoDb);
     if (!resolved) return response.setError("Unauthorized");
     const user = await mongoDb.collection("users").findOne({ _id: new ObjectId(body.id), status:"active" }, { projection: { password: 0, descriptionVoiceInfo:0, profilePhotoInfo:0 } })
     if (user) {
