@@ -15,7 +15,7 @@ export default async function ({ body, voiceHubDb, req, session, jwt }: AppConte
     await mongoDb.collection("users").updateMany({ _id: { $in: user.followers } }, { $pull: { followings: user._id } as any });
     await mongoDb.collection("users").updateMany({ _id: { $in: user.followings } }, { $pull: { followers: user._id } as any });
     //  deactive current token jsonwebtoken
-    await mongoDb.collection("loginLogs").updateOne({ userId: new ObjectId(user._id) }, { $set: { tokenStatus: "passive", updatedAt: new Date() } })
+    await mongoDb.collection("loginLogs").updateMany({ userId: new ObjectId(user._id) }, { $set: { tokenStatus: "passive", updatedAt: new Date() } })
     jsonwebtoken.sign({ _id: user._id }, jwt.secret, { expiresIn: "0s" });
     return response.setSuccess("Account deactivated successfully");
 }
