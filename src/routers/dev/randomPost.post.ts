@@ -124,7 +124,6 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
         "Tasarim"
     ];
 
-    const objectId = new ObjectId();
     let content;
     let contents = [];
     if (Array.isArray(req.files)) {
@@ -132,6 +131,7 @@ export default async function ({ body, session, jwt, voiceHubDb, req }: AppConte
     }
     let isError = false;
     for (const content of contents) {
+        const objectId = new ObjectId();
         if (content && content.mimetype.includes("audio")) {
             const contentUrl = `public/voices/${objectId + "_content." + content.mimetype.split("/")[1]}`;
             await writeFile(contentUrl, content.buffer).then(() => {
