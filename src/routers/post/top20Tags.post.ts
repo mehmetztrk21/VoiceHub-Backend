@@ -13,7 +13,7 @@ export default async function ({ body, voiceHubDb, req, session }: AppContext<Re
    // const pastWeek = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000); // Calculate past week date
     const topCategories = await mongoDb.collection("posts")
         .aggregate([
-          //  { $match: { createdAt: { $gte: pastWeek } } }, // Filter posts created in past week
+            // { $match: { _id: { $ne: "" } } }, // Exclude documents with empty categories
             { $unwind: "$categories" }, // Split categories array into multiple documents
             { $group: { _id: "$categories", count: { $sum: 1 } } }, // Group by category and count the occurrences
             { $sort: { count: -1 } }, // Sort by count in descending order

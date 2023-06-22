@@ -3,7 +3,7 @@ import { ObjectId } from "mongodb";
 import { v4 as uuidv4 } from 'uuid';
 import { AppContext } from "../../AppContext";
 import { resolveToken } from "../../utils/resolveToken";
-import { renameFile, writeFile } from "../../utils/writeFile";
+import { existsFile, renameFile, writeFile } from "../../utils/writeFile";
 
 interface Request {
     name: string;
@@ -32,20 +32,33 @@ export default async function ({ body, voiceHubDb, req }: AppContext<Request>) {
         descriptionVoice = req.files.find(f => f.fieldname == "descriptionVoice");
     }
     if (profilePhoto && profilePhoto.mimetype.includes("image")) {
-        const profilePhotoUrl = `public/photos/${resolved["_id"] + uuidv4()}_profilePhoto.${profilePhoto.mimetype.split("/")[1]}`;
-        await writeFile(profilePhotoUrl, profilePhoto.buffer).then(() => {
-            delete profilePhoto.buffer;
-            console.log("File saved");
-        }).catch((err) => {
-            console.log(err);
-        });
-        await renameFile(user.profilePhotoUrl, profilePhotoUrl).then(() => {
+        if (await existsFile(user.profilePhotoUrl)) {
+            const profilePhotoUrl = `public/photos/${resolved["_id"] + uuidv4()}_profilePhoto.${profilePhoto.mimetype.split("/")[1]}`;
+            await writeFile(user.profilePhotoUrl, profilePhoto.buffer).then(() => {
+                delete profilePhoto.buffer;
+                console.log("File saved");
+            }).catch((err) => {
+                console.log(err);
+            });
+            await renameFile(user.profilePhotoUrl, profilePhotoUrl).then(() => {
+                body.profilePhotoUrl = profilePhotoUrl;
+                body.profilePhotoInfo = profilePhoto;
+                console.log("File renamed");
+            }).catch((err) => {
+                console.log(err);
+            });
+        } else {
+            const profilePhotoUrl = `public/photos/${resolved["_id"] + uuidv4()}_profilePhoto.${profilePhoto.mimetype.split("/")[1]}`;
+            await writeFile(profilePhotoUrl, profilePhoto.buffer).then(() => {
+                delete profilePhoto.buffer;
+                console.log("File saved");
+            }
+            ).catch((err) => {
+                console.log(err);
+            });
             body.profilePhotoUrl = profilePhotoUrl;
             body.profilePhotoInfo = profilePhoto;
-            console.log("File renamed");
-        }).catch((err) => {
-            console.log(err);
-        });
+        }
     }
     if (descriptionVoice && (descriptionVoice.mimetype.includes("audio") || descriptionVoice.mimetype.includes("video"))) {
         const descriptionVoiceUrl = `public/voices/${resolved["_id"] + uuidv4() + "_descriptionVoice." + descriptionVoice.mimetype.split("/")[1]}`;
